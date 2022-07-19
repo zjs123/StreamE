@@ -34,12 +34,12 @@ If you make use of this code in your work, please cite the following paper:
 
 ```
 @inproceedings{Zhang2022StreamE,
-  title={Temporal knowledge graph representation learning with local and global evolutions},
+  title={StreamE: Learning to Update Representations for Temporal Knowledge Graphs in Streaming Scenarios},
   author={Jiasheng Zhang, Jie Shao and Bin Cui},
   booktitle={},
   volume = {},
   pages = {},
-  year = {}
+  year = {2022}
 ```
 
 ## Contents
