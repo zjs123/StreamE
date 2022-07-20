@@ -101,12 +101,12 @@ class Main:
 			p.finish()
 			print("loss: " + str(float(epochLoss)))
 
-			if epoch % 3 == 0:
+			if epoch % 1 == 0:
 				self.model.eval()
 				with torch.no_grad():
-					print("evaluating...")
+					#print("evaluating...")
 					self.eval(self.model.entity_weights.weight.data)
-		print(self.best)
+				print(self.best)
 				
 	def adjust_learning_rate(self, optimizer, batch_len):
 		lr = self.lr * (batch_len/self.batch_size)
@@ -211,9 +211,9 @@ if __name__ == '__main__':
 	parser.add_argument("--lr", dest="lr", type=float, default=1e-3)
 	parser.add_argument("--ns", dest="ns", type=int, default=20)
 	parser.add_argument("-init_type", dest="init_type", type=str, default="average")
-	parser.add_argument("--dataset",dest="dataset",type=str,default="ICEWS18")
-	parser.add_argument("--numOfEpoch",dest="numOfEpoch",type=int,default=100)
-	parser.add_argument("--his_length", dest="his_length",type=int,default=2) 
+	parser.add_argument("--dataset",dest="dataset",type=str,default="ICEWS14")
+	parser.add_argument("--numOfEpoch",dest="numOfEpoch",type=int,default=200)
+	parser.add_argument("--his_length", dest="his_length",type=int,default=3) 
 	parser.add_argument("--graph_sample", dest="graph_sample",type=int,default=10)
 
 	args=parser.parse_args()

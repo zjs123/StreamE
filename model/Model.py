@@ -110,7 +110,7 @@ class Model(nn.Module):
 
 		self.act = nn.Tanh()
 		self.relu = nn.ReLU()
-		self.dropout = nn.Dropout(p=0)
+		self.dropout = nn.Dropout(p=0.0)
 		self.score_func = DistMult() #TransE(1) #ConvE(self.numOfbase)
 
 	def init_weights(self, weights, new_entities, related_nodes, step):
@@ -184,7 +184,6 @@ class Model(nn.Module):
 			
 			if self.dataset == "YAGO":
 				Loss += 0.001*norm1
-			
 			
 			if self.dataset == "ICEWS18":
 				Loss += 0.001*norm1+0.001*norm2#+0.01*torch.norm(self.entity_emb.weight)
@@ -334,8 +333,8 @@ class Model(nn.Module):
 			weights[only_prop_nodes] = new_prop #.detach() #.clone()#.requires_grad_() #F.normalize(new_prop_trade) #.clone() #new_prop
 			self.step_dict[only_prop_nodes] = step
 		
-			#norm1 += torch.norm(pre_weights_trade-new_prop).mean()
-			#norm2 += torch.norm(prop_weights-new_prop).mean()
+			norm1 += torch.norm(pre_weights_trade-new_prop).mean()
+			norm2 += torch.norm(prop_weights-new_prop).mean()
 		
 		self.his_e[active_nodes] = interact_e
 		self.his_r[active_nodes] = interact_r
@@ -364,6 +363,7 @@ class Model(nn.Module):
 		#print(changes.size())
 		time_span = (step-self.step_dict[related_e.flatten()]).view(related_e.size(0),related_e.size(1)).unsqueeze(-1).repeat(1,1,self.numOfbase)
 		time_span[time_span<=0] = 0
+		time_span[time_span>=3] = 3
 		related_e_weights = torch.mean(related_e_weights*torch.sigmoid(time_span*self.lamda), 1)
 		#pre_time_emb = self.get_time_embedding(torch.FloatTensor([step]*len(index)))
 		#aft_time_emb = self.get_time_embedding(self.step_dict[index].float())
@@ -394,7 +394,7 @@ class Model(nn.Module):
 		t = torch.mean(torch.sin(self.period_matrix(torch.cat([raw_weights.unsqueeze(1).repeat(1,self.trade_vector.size()[0],1), t_tmp.unsqueeze(0).repeat(raw_weights.size()[0], 1, 1)], -1))), 1)
 		#t = torch.mean(self.relu(raw_weights.unsqueeze(1)*self.trade_vector.unsqueeze(0)), 1) #raw_weights*torch.tanh(self.time_embedding*time_span)
 		#gate = torch.tanh(self.project_matrix(torch.cat([raw_weights,related_e_weights],-1)))#*torch.sigmoid(time_span*self.trade_vector)
-		weights_trade = raw_weights + h + t
+		weights_trade = raw_weights + h# + t
 		#weights_trade = self.read_weights(weights_trade)
 		#weights_trade = (1-gate)*raw_weights + gate*h #*(torch.sin(self.time_embedding*time_span) +  torch.tanh(self.time_embedding*time_span))*related_e_weights #(torch.sin(self.time_embedding*time_span)+torch.tanh(self.bias*time_span))*raw_weights #raw_weights+(torch.sin(raw_weights*time_span)+torch.tanh(self.trade_matrix(raw_weights)*time_span)) # + trade # + trade #self.update(raw_weights, time_decay) #raw_weights+trade*raw_weights#.detach() #*(1+trade) #(1+trade)*raw_weights #(1-time_decay)*trade + time_decay*raw_weights #*gate #*all_weights_pooling #0.1*self.bias*self.relu(step-self.step_dict[index]).unsqueeze(1).repeat(1,self.numOfbase)  #gate*(step-self.step_dict[index]).unsqueeze(1).repeat(1,self.numOfbase) #*time_decay #*time_decay # + 0.1*self.bias*(step-self.step_dict[index]).unsqueeze(1).repeat(1,self.numOfbase) # + gate#*time_decay #gate*raw_weights + (1-gate)*all_weights_pooling #*(step-self.step_dict[index]).unsqueeze(1).repeat(1,self.numOfbase)
 		
