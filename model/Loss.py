@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Feb  3 17:04:41 2020
-
-@author: zjs
-"""
 import torch
 import torch.autograd as autograd
 import torch.nn.functional as F
